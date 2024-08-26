@@ -40,10 +40,10 @@ cmake ..
 make
 ```
 Example targets
-´´´
+```
 src/main
 tests/test_example_classes
-´´´
+```
 ### More help
 ```
 python3 json2cpp.py -h
