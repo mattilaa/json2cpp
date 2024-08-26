@@ -1,0 +1,68 @@
+{
+  "metadata": {
+    "namespace": "example"
+  },
+  "classes": [
+    {
+      "name": "Person",
+      "attributes": [
+        {"name": "name", "type": "std::string"},
+        {"name": "age", "type": "int"},
+        {"name": "body", "type": "Body"}
+      ],
+      "methods": [],
+      "constraints": {
+        "age": {
+          "min": 0,
+          "max": 150
+        }
+      },
+      "inner_structs": [
+        {
+          "name": "Body",
+          "attributes": [
+            {"name": "weight", "type": "double"},
+            {"name": "height", "type": "double"},
+            {"name": "physicalAttributes", "type": "PhysicalAttributes"}
+          ],
+          "constraints": {
+            "weight": {
+              "min": 0,
+              "max": 500
+            },
+            "height": {
+              "min": 0,
+              "max": 3
+            }
+          },
+          "inner_structs": [
+            {
+              "name": "PhysicalAttributes",
+              "attributes": [
+                {"name": "eyeColor", "type": "EyeColor"},
+                {"name": "hairColor", "type": "std::string"}
+              ],
+              "constraints": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Family",
+      "attributes": [
+        {"name": "familyName", "type": "std::string"},
+        {"name": "father", "type": "Person"},
+        {"name": "mother", "type": "Person"},
+        {"name": "children", "type": "std::vector<Person>"}
+      ],
+      "methods": [],
+      "constraints": {}
+    },
+    {
+      "name": "EyeColor",
+      "type": "enum",
+      "values": ["Brown", "Blue", "Green", "Hazel", "Gray"]
+    }
+  ]
+}

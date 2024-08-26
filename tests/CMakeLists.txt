@@ -1,0 +1,4 @@
+add_executable(test_generated_classes test_generated_classes.cpp)
+target_link_libraries(test_generated_classes PRIVATE generated_classes gtest gtest_main)
+
+add_test(NAME test_generated_classes COMMAND test_generated_classes)
