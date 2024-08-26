@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 project(JsonClassConverter)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -7,25 +7,29 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(PYTHON_SCRIPT "${CMAKE_SOURCE_DIR}/json2cpp.py")
-set(SCHEMA_FILE "${CMAKE_SOURCE_DIR}/schema.json")
-set(GENERATED_DIR "${CMAKE_SOURCE_DIR}/generated")
-set(GENERATED_FILE_PREFIX "generated_classes")
+set(SCHEMA_FILE "${CMAKE_SOURCE_DIR}/schema/example_schema.json")
+set(GENERATED_DIR_CPP "${CMAKE_SOURCE_DIR}/generated")
+set(GENERATED_DIR_HPP "${CMAKE_SOURCE_DIR}/include")
+set(GENERATED_FILE_PREFIX "example_classes")
 
 set(GENERATED_FILES
-    ${GENERATED_DIR}/generated_classes.h
-    ${GENERATED_DIR}/generated_classes.cpp
+    ${GENERATED_DIR_HPP}/example_classes.h
+    ${GENERATED_DIR_CPP}/example_classes.cpp
 )
 
 add_custom_command(
     OUTPUT ${GENERATED_FILES}
-    COMMAND ${CMAKE_COMMAND} -E env python3 ${PYTHON_SCRIPT} --schema ${SCHEMA_FILE} --ocpp ${GENERATED_DIR} --oheader ${GENERATED_DIR} --ofile ${GENERATED_FILE_PREFIX}
+    COMMAND ${CMAKE_COMMAND} -E env python3 ${PYTHON_SCRIPT} --schema ${SCHEMA_FILE} --ocpp ${GENERATED_DIR_CPP} --oheader ${GENERATED_DIR_HPP} --ofile ${GENERATED_FILE_PREFIX}
     DEPENDS ${PYTHON_SCRIPT} ${SCHEMA_FILE}
     COMMENT "Running Python script to generate C++ files"
     VERBATIM
 )
+
 # Add RapidJSON
 set(RAPIDJSON_BUILD_TESTS OFF CACHE BOOL "Disable RapidJSON tests" FORCE)
 set(RAPIDJSON_BUILD_EXAMPLES OFF CACHE BOOL "Disable RapidJSON examples" FORCE)
+set(RAPIDJSON_BUILD_DOC OFF CACHE BOOL "Disable Doxygen" FORCE)
+
 include(FetchContent)
 FetchContent_Declare(
     rapidjson
@@ -42,10 +46,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-add_library(generated_classes STATIC
-    ${GENERATED_DIR}/generated_classes.cpp
+add_library(example_classes STATIC
+    ${GENERATED_DIR_CPP}/example_classes.cpp
 )
-target_include_directories(generated_classes PUBLIC ${CMAKE_SOURCE_DIR} ${rapidjson_SOURCE_DIR}/include)
+target_include_directories(example_classes PUBLIC ${CMAKE_SOURCE_DIR} ${rapidjson_SOURCE_DIR}/include ${GENERATED_DIR_HPP})
 
 add_subdirectory(src)
 add_subdirectory(tests)

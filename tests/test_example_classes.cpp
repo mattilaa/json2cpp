@@ -1,4 +1,4 @@
-#include "generated/generated_classes.h"
+#include "example_classes.h"
 #include <gtest/gtest.h>
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>

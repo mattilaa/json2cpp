@@ -1,2 +1,2 @@
 add_executable(main main.cpp)
-target_link_libraries(main PRIVATE generated_classes)
+target_link_libraries(main PRIVATE example_classes)
