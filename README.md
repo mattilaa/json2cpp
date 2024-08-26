@@ -6,7 +6,7 @@ A simple Python script that generates C++ classes from a JSON schema file. Rapid
 You don’t necessarily need anything other than the json2cpp.py script. You can download it separately if you want. Alternatively, you can clone this repository to get the example_schema.json file and see how it is used in C++ code.
 
 ```
-git clone https://github.com/mattilaa
+git clone https://github.com/mattilaa/json2cpp
 ```
 ## Examples
 
