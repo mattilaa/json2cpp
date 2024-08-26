@@ -2,9 +2,22 @@
   "metadata": {
     "namespace": "example"
   },
+  "enums": [
+    {
+      "name": "ObjectType",
+      "type": "enum",
+      "values": ["Class", "Struct"]
+    },
+    {
+      "name": "EyeColor",
+      "type": "enum",
+      "values": ["Brown", "Blue", "Green", "Hazel", "Gray"]
+    }
+  ],
   "classes": [
     {
       "name": "Person",
+      "object_type": "Class",
       "attributes": [
         {"name": "name", "type": "std::string"},
         {"name": "age", "type": "int"},
@@ -20,6 +33,7 @@
       "inner_structs": [
         {
           "name": "Body",
+          "object_type": "Struct",
           "attributes": [
             {"name": "weight", "type": "double"},
             {"name": "height", "type": "double"},
@@ -38,6 +52,7 @@
           "inner_structs": [
             {
               "name": "PhysicalAttributes",
+              "object_type": "Struct",
               "attributes": [
                 {"name": "eyeColor", "type": "EyeColor"},
                 {"name": "hairColor", "type": "std::string"}
@@ -50,6 +65,7 @@
     },
     {
       "name": "Family",
+      "object_type": "Class",
       "attributes": [
         {"name": "familyName", "type": "std::string"},
         {"name": "father", "type": "Person"},
@@ -58,11 +74,6 @@
       ],
       "methods": [],
       "constraints": {}
-    },
-    {
-      "name": "EyeColor",
-      "type": "enum",
-      "values": ["Brown", "Blue", "Green", "Hazel", "Gray"]
     }
   ]
 }
