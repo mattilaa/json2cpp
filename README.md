@@ -48,5 +48,55 @@ tests/test_example_classes
 ```
 python3 json2cpp.py -h
 ```
+### Example generator code
+```cpp
+enum class EyeColor {
+    Brown,
+    Blue,
+    Green,
+    Hazel,
+    Gray
+};
 
+class Person {
+public:
+    struct Body {
+        struct PhysicalAttributes {
+            EyeColor eyeColor;
+            std::string hairColor;
+
+            void fromJson(const rapidjson::Value& json);
+            rapidjson::Value toJson(rapidjson::Document::AllocatorType& allocator) const;
+
+            void validate() const;
+        };
+
+        double weight;
+        double height;
+        PhysicalAttributes physicalAttributes;
+
+        void fromJson(const rapidjson::Value& json);
+        rapidjson::Value toJson(rapidjson::Document::AllocatorType& allocator) const;
+
+        void validate() const;
+    };
+
+    std::string name;
+    int age;
+    Body body;
+
+    Person();
+    std::string getName() const;
+    void setName(std::string value);
+    int getAge() const;
+    void setAge(int value);
+    Body getBody() const;
+    void setBody(Body value);
+
+    void fromJson(const rapidjson::Value& json);
+    rapidjson::Value toJson(rapidjson::Document::AllocatorType& allocator) const;
+
+    void validate() const;
+};
+```
 ### TODO: Add schema format documentation
