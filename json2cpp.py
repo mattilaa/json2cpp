@@ -2,13 +2,14 @@ import argparse
 import json
 import os
 import sys
-from enum import Enum
+
 
 class JsonToCppConverter:
-    def __init__(self, json_schema, header_file, implementation_file):
-        self.json_schema = json_schema
-        self.header_file = header_file
-        self.implementation_file = implementation_file
+    def __init__(self, args):
+        self.json_schema = args.schema
+        self.header_name = args.ofile
+        self.header_file = f"{os.path.join(args.oheader, args.ofile)}.h"
+        self.implementation_file = f"{os.path.join(args.ocpp, args.ofile)}.cpp"
         self.metadata, self.enums, self.classes = self.read_json_schema()
         self.namespace = self.metadata.get("namespace", "")
         self.all_classes = set(class_spec['name'] for class_spec in self.classes)
@@ -98,8 +99,11 @@ class JsonToCppConverter:
                     cpp_code += f"{indent}    void set{attr_name.capitalize()}({attr_type} value);\n"
 
         # Generate method declarations for both Class and Struct
+        if attributes:
+            cpp_code += "\n"
         cpp_code += f"{indent}    void fromJson(const rapidjson::Value& json);\n"
         cpp_code += f"{indent}    rapidjson::Value toJson(rapidjson::Document::AllocatorType& allocator) const;\n"
+        cpp_code += "\n"
         cpp_code += f"{indent}    void validate() const;\n"
 
         cpp_code += f"{indent}}};\n"
@@ -262,7 +266,9 @@ class JsonToCppConverter:
     def generate_cpp_files(self):
         # Generate header file
         with open(self.header_file, 'w') as f:
-            f.write("#pragma once\n\n")
+            ifdef_name = self.header_name.upper() + "_H"
+            f.write(f"#ifndef {ifdef_name}\n")
+            f.write(f"#define {ifdef_name}\n\n")
             f.write("#include <string>\n")
             f.write("#include <memory>\n")
             f.write("#include <vector>\n")
@@ -292,7 +298,8 @@ class JsonToCppConverter:
                 f.write(self.generate_cpp_class_declaration(class_spec))
                 f.write("\n")
 
-            f.write(f"}} // namespace {self.namespace}\n")
+            f.write(f"}} // namespace {self.namespace}\n\n")
+            f.write(f"#endif // {ifdef_name}\n")
 
         print(f"Header file created: {self.header_file}")
 
@@ -366,10 +373,7 @@ def main():
             print("Output directories do not exist and were not generated.", file=sys.stderr)
             sys.exit(1)
 
-    output_cpp = os.path.join(args.ocpp, args.ofile)
-    output_header = os.path.join(args.oheader, args.ofile)
-
-    converter = JsonToCppConverter(args.schema, f"{output_header}.h", f"{output_cpp}.cpp")
+    converter = JsonToCppConverter(args)
     converter.generate_cpp_files()
     print("Done.")
 
