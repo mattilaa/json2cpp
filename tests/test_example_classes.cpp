@@ -15,7 +15,7 @@ TEST(GeneratedClassesTest, PersonSerialization) {
     person.body.physicalAttributes.eyeColor = EyeColor::Blue;
     person.body.physicalAttributes.hairColor = "Brown";
 
-    EXPECT_TRUE(person.validate());
+    EXPECT_NO_THROW(person.validate());
 
     rapidjson::Document doc;
     auto& allocator = doc.GetAllocator();
@@ -57,7 +57,7 @@ TEST(GeneratedClassesTest, PersonDeserialization) {
     Person person;
     person.fromJson(doc);
 
-    EXPECT_TRUE(person.validate());
+    EXPECT_NO_THROW(person.validate());
     EXPECT_EQ(person.name, "Jane Doe");
     EXPECT_EQ(person.age, 25);
     EXPECT_DOUBLE_EQ(person.body.weight, 60.0);
@@ -75,31 +75,31 @@ TEST(GeneratedClassesTest, PersonValidation) {
     person.body.physicalAttributes.eyeColor = EyeColor::Blue;
     person.body.physicalAttributes.hairColor = "Brown";
 
-    EXPECT_TRUE(person.validate());
+    EXPECT_NO_THROW(person.validate());
 
     // Test age constraint
     person.age = -1;
-    EXPECT_FALSE(person.validate());
+    EXPECT_THROW(person.validate(), ValueRangeException);
     person.age = 151;
-    EXPECT_FALSE(person.validate());
+    EXPECT_THROW(person.validate(), ValueRangeException);
     person.age = 30;
-    EXPECT_TRUE(person.validate());
+    EXPECT_NO_THROW(person.validate());
 
     // Test weight constraint
     person.body.weight = -1;
-    EXPECT_FALSE(person.validate());
+    EXPECT_THROW(person.validate(), ValueRangeException);
     person.body.weight = 501;
-    EXPECT_FALSE(person.validate());
+    EXPECT_THROW(person.validate(), ValueRangeException);
     person.body.weight = 70.5;
-    EXPECT_TRUE(person.validate());
+    EXPECT_NO_THROW(person.validate());
 
     // Test height constraint
     person.body.height = -0.1;
-    EXPECT_FALSE(person.validate());
+    EXPECT_THROW(person.validate(), ValueRangeException);
     person.body.height = 3.1;
-    EXPECT_FALSE(person.validate());
+    EXPECT_THROW(person.validate(), ValueRangeException);
     person.body.height = 1.75;
-    EXPECT_TRUE(person.validate());
+    EXPECT_NO_THROW(person.validate());
 }
 
 TEST(GeneratedClassesTest, FamilySerialization) {
@@ -119,7 +119,7 @@ TEST(GeneratedClassesTest, FamilySerialization) {
     child->age = 10;
     family.children.push_back(*child);
 
-    EXPECT_TRUE(family.validate());
+    EXPECT_NO_THROW(family.validate());
 
     rapidjson::Document doc;
     auto& allocator = doc.GetAllocator();
@@ -188,7 +188,7 @@ TEST(GeneratedClassesTest, FamilyDeserialization) {
     Family family;
     family.fromJson(doc);
 
-    EXPECT_TRUE(family.validate());
+    EXPECT_NO_THROW(family.validate());
     EXPECT_EQ(family.familyName, "Smith");
     EXPECT_EQ(family.father->name, "John Smith");
     EXPECT_EQ(family.father->age, 45);
@@ -207,7 +207,7 @@ TEST(GeneratedClassesTest, EnumSerialization) {
     person.body.physicalAttributes.eyeColor = EyeColor::Blue;
     person.body.physicalAttributes.hairColor = "Brown";
 
-    EXPECT_TRUE(person.validate());
+    EXPECT_NO_THROW(person.validate());
 
     rapidjson::Document doc;
     auto& allocator = doc.GetAllocator();
@@ -244,7 +244,7 @@ TEST(GeneratedClassesTest, EnumDeserialization) {
     Person person;
     person.fromJson(doc);
 
-    EXPECT_TRUE(person.validate());
+    EXPECT_NO_THROW(person.validate());
     EXPECT_EQ(person.name, "Jane Doe");
     EXPECT_EQ(person.age, 25);
     EXPECT_DOUBLE_EQ(person.body.weight, 60.0);

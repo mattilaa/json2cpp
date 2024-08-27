@@ -188,25 +188,6 @@ class JsonToCppConverter:
             cpp_code += "    return json;\n"
             cpp_code += "}\n\n"
 
-            # Generate validate method
-            cpp_code += f"bool {full_class_name}::validate() const {{\n"
-            for attr_name, constraint in constraints.items():
-                attr_type = next(attr['type'] for attr in attributes if attr['name'] == attr_name)
-                if 'min' in constraint:
-                    cpp_code += f"    if (get{attr_name.capitalize()}() < {constraint['min']}) return false;\n"
-                if 'max' in constraint:
-                    cpp_code += f"    if (get{attr_name.capitalize()}() > {constraint['max']}) return false;\n"
-
-            for attr in attributes:
-                attr_name = attr['name']
-                attr_type = attr['type']
-                if attr_type in self.all_classes:
-                    cpp_code += f"    if ({attr_name} && !{attr_name}->validate()) return false;\n"
-                elif attr_type in [struct['name'] for struct in inner_structs]:
-                    cpp_code += f"    if (!{attr_name}.validate()) return false;\n"
-
-            cpp_code += "    return true;\n"
-            cpp_code += "}\n\n"
         else:  # For Struct
             # Generate fromJson method
             cpp_code += f"void {full_class_name}::fromJson(const rapidjson::Value& json) {{\n"
@@ -251,25 +232,30 @@ class JsonToCppConverter:
             cpp_code += "    return json;\n"
             cpp_code += "}\n\n"
 
-            # Generate validate method
-            cpp_code += f"bool {full_class_name}::validate() const {{\n"
-            for attr_name, constraint in constraints.items():
-                attr_type = next(attr['type'] for attr in attributes if attr['name'] == attr_name)
-                if 'min' in constraint:
-                    cpp_code += f"    if ({attr_name} < {constraint['min']}) return false;\n"
-                if 'max' in constraint:
-                    cpp_code += f"    if ({attr_name} > {constraint['max']}) return false;\n"
+        # Generate validate method
+        cpp_code += f"void {full_class_name}::validate() const {{\n"
+        for attr_name, constraint in constraints.items():
+            attr_type = next(attr['type'] for attr in attributes if attr['name'] == attr_name)
+            if 'min' in constraint:
+                cpp_code += f"    if ({attr_name} < {constraint['min']}) {{\n"
+                cpp_code += f"        throw ValueRangeException(\"{attr_name} is below the minimum value of {constraint['min']}\");\n"
+                cpp_code += "    }\n"
+            if 'max' in constraint:
+                cpp_code += f"    if ({attr_name} > {constraint['max']}) {{\n"
+                cpp_code += f"        throw ValueRangeException(\"{attr_name} exceeds the maximum value of {constraint['max']}\");\n"
+                cpp_code += "    }\n"
 
-            for attr in attributes:
-                attr_name = attr['name']
-                attr_type = attr['type']
-                if attr_type in self.all_classes:
-                    cpp_code += f"    if ({attr_name} && !{attr_name}->validate()) return false;\n"
-                elif attr_type in [struct['name'] for struct in inner_structs]:
-                    cpp_code += f"    if (!{attr_name}.validate()) return false;\n"
+        for attr in attributes:
+            attr_name = attr['name']
+            attr_type = attr['type']
+            if attr_type in self.all_classes:
+                cpp_code += f"    if ({attr_name}) {{\n"
+                cpp_code += f"        {attr_name}->validate();\n"
+                cpp_code += "    }\n"
+            elif attr_type in [struct['name'] for struct in inner_structs]:
+                cpp_code += f"    {attr_name}.validate();\n"
 
-            cpp_code += "    return true;\n"
-            cpp_code += "}\n\n"
+        cpp_code += "}\n\n"
 
         return cpp_code
 
@@ -284,6 +270,12 @@ class JsonToCppConverter:
             f.write("#include <rapidjson/document.h>\n\n")
 
             f.write(f"namespace {self.namespace} {{\n\n")
+
+            # Add custom exception class
+            f.write("class ValueRangeException : public std::runtime_error {\n")
+            f.write("public:\n")
+            f.write("    ValueRangeException(const std::string& what_arg) : std::runtime_error(what_arg) {}\n")
+            f.write("};\n\n")
 
             # Add template declarations for to_string and from_string
             f.write("template<typename EnumType>\n")
