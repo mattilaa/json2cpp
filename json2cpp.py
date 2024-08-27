@@ -51,57 +51,58 @@ class JsonToCppConverter:
 
         return cpp_code
 
-    def generate_cpp_class_declaration(self, class_spec, parent_class=""):
+    def generate_cpp_class_declaration(self, class_spec, parent_class="", indent_level=0):
         class_name = class_spec['name']
         attributes = class_spec['attributes']
         inner_structs = class_spec.get('inner_structs', [])
         object_type = class_spec.get('object_type', 'Class')
 
         full_class_name = f"{parent_class}::{class_name}" if parent_class else class_name
+        indent = "    " * indent_level
         cpp_code = ""
 
-        cpp_code += f"{object_type.lower()} {class_name} {{\n"
+        cpp_code += f"{indent}{object_type.lower()} {class_name} {{\n"
 
         if object_type == 'Class':
-            cpp_code += "public:\n"
+            cpp_code += f"{indent}public:\n"
 
-        # Generate inner structs
+        # Generate inner structs at the same indentation level as other members
         for inner_struct in inner_structs:
-            cpp_code += self.generate_cpp_class_declaration(inner_struct, full_class_name)
+            cpp_code += self.generate_cpp_class_declaration(inner_struct, full_class_name, indent_level + 1)
             cpp_code += "\n"
 
         # Generate attributes
         for attr in attributes:
             attr_type = attr['type']
             if attr_type in self.all_classes:
-                cpp_code += f"    std::shared_ptr<{attr_type}> {attr['name']};\n"
+                cpp_code += f"{indent}    std::shared_ptr<{attr_type}> {attr['name']};\n"
             else:
-                cpp_code += f"    {attr_type} {attr['name']};\n"
+                cpp_code += f"{indent}    {attr_type} {attr['name']};\n"
 
         if object_type == 'Class':
             # Generate constructor declaration
-            cpp_code += f"\n    {class_name}();\n"
+            cpp_code += f"\n{indent}    {class_name}();\n"
 
             # Generate getter and setter declarations
             for attr in attributes:
                 attr_name = attr['name']
                 attr_type = attr['type']
                 if attr_type in self.all_classes:
-                    cpp_code += f"    const std::shared_ptr<{attr_type}>& get{attr_name.capitalize()}() const;\n"
-                    cpp_code += f"    void set{attr_name.capitalize()}(const std::shared_ptr<{attr_type}>& value);\n"
+                    cpp_code += f"{indent}    const std::shared_ptr<{attr_type}>& get{attr_name.capitalize()}() const;\n"
+                    cpp_code += f"{indent}    void set{attr_name.capitalize()}(const std::shared_ptr<{attr_type}>& value);\n"
                 elif attr_type.startswith("std::vector<"):
-                    cpp_code += f"    const {attr_type}& get{attr_name.capitalize()}() const;\n"
-                    cpp_code += f"    void set{attr_name.capitalize()}(const {attr_type}& value);\n"
+                    cpp_code += f"{indent}    const {attr_type}& get{attr_name.capitalize()}() const;\n"
+                    cpp_code += f"{indent}    void set{attr_name.capitalize()}(const {attr_type}& value);\n"
                 else:
-                    cpp_code += f"    {attr_type} get{attr_name.capitalize()}() const;\n"
-                    cpp_code += f"    void set{attr_name.capitalize()}({attr_type} value);\n"
+                    cpp_code += f"{indent}    {attr_type} get{attr_name.capitalize()}() const;\n"
+                    cpp_code += f"{indent}    void set{attr_name.capitalize()}({attr_type} value);\n"
 
         # Generate method declarations for both Class and Struct
-        cpp_code += "    void fromJson(const rapidjson::Value& json);\n"
-        cpp_code += "    rapidjson::Value toJson(rapidjson::Document::AllocatorType& allocator) const;\n"
-        cpp_code += "    bool validate() const;\n"
+        cpp_code += f"{indent}    void fromJson(const rapidjson::Value& json);\n"
+        cpp_code += f"{indent}    rapidjson::Value toJson(rapidjson::Document::AllocatorType& allocator) const;\n"
+        cpp_code += f"{indent}    void validate() const;\n"
 
-        cpp_code += "};\n"
+        cpp_code += f"{indent}}};\n"
 
         return cpp_code
 
