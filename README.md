@@ -1,20 +1,18 @@
 # JSON to C++ class generator
 ## Description
-A simple Python script that generates C++ classes from a JSON schema file. RapidJSON is used as a backend for JSON serialization and deserialization in the C++ code. An example CMake project fetches and builds RapidJSON (and GoogleTest) from the repository, so there is no need to install it into the system.
+A simple Python script that generates C++ classes from a JSON schema file. [RapidJSON](https://github.com/Tencent/rapidjson) is used as the backend for JSON serialization and deserialization in the C++ code. An example CMake project fetches and builds RapidJSON (and GoogleTest) from the repository, so there is no need to install them on the system.
 
 ## Installing
-You don’t necessarily need anything other than the json2cpp.py script. You can download it separately if you want. Alternatively, you can clone this repository to get the example_schema.json file and see how it is used in C++ code.
-
+You don’t need anything other than the [json2cpp.py](https://github.com/mattilaa/json2cpp/blob/main/json2cpp.py) script. You can download it separately if you prefer. Alternatively, you can clone this repository to get the [example_schema.json](https://github.com/mattilaa/json2cpp/blob/main/schema/example_schema.json) file and the CMake project to see how they are used in the C++ code.
 ```
 git clone https://github.com/mattilaa/json2cpp
 ```
 ## Examples
-
 ### Simple usage
 ```
 python3 json2cpp.py --schema schema/example_schema.json
 ```
-This generates files with default names in the default location.
+This generates files with default names in the default location
 ```
 .
 ├── json2cpp_gen.cpp
