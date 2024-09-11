@@ -55,7 +55,7 @@ TEST(GeneratedClassesTest, PersonDeserialization) {
     doc.Parse(json);
 
     Person person;
-    person.fromJson(doc);
+    EXPECT_NO_THROW(person.fromJson(doc));
 
     EXPECT_NO_THROW(person.validate());
     EXPECT_EQ(person.name, "Jane Doe");
@@ -79,25 +79,25 @@ TEST(GeneratedClassesTest, PersonValidation) {
 
     // Test age constraint
     person.age = -1;
-    EXPECT_THROW(person.validate(), ValueRangeException);
+    EXPECT_THROW(person.validate(), std::out_of_range);
     person.age = 151;
-    EXPECT_THROW(person.validate(), ValueRangeException);
+    EXPECT_THROW(person.validate(), std::out_of_range);
     person.age = 30;
     EXPECT_NO_THROW(person.validate());
 
     // Test weight constraint
     person.body.weight = -1;
-    EXPECT_THROW(person.validate(), ValueRangeException);
+    EXPECT_THROW(person.validate(), std::out_of_range);
     person.body.weight = 501;
-    EXPECT_THROW(person.validate(), ValueRangeException);
+    EXPECT_THROW(person.validate(), std::out_of_range);
     person.body.weight = 70.5;
     EXPECT_NO_THROW(person.validate());
 
     // Test height constraint
     person.body.height = -0.1;
-    EXPECT_THROW(person.validate(), ValueRangeException);
+    EXPECT_THROW(person.validate(), std::out_of_range);
     person.body.height = 3.1;
-    EXPECT_THROW(person.validate(), ValueRangeException);
+    EXPECT_THROW(person.validate(), std::out_of_range);
     person.body.height = 1.75;
     EXPECT_NO_THROW(person.validate());
 }
@@ -109,15 +109,27 @@ TEST(GeneratedClassesTest, FamilySerialization) {
     family.father = std::make_shared<Person>();
     family.father->name = "John Doe";
     family.father->age = 40;
+    family.father->body.weight = 80.0;
+    family.father->body.height = 1.80;
+    family.father->body.physicalAttributes.eyeColor = EyeColor::Brown;
+    family.father->body.physicalAttributes.hairColor = "Black";
 
     family.mother = std::make_shared<Person>();
     family.mother->name = "Jane Doe";
     family.mother->age = 38;
+    family.mother->body.weight = 65.0;
+    family.mother->body.height = 1.70;
+    family.mother->body.physicalAttributes.eyeColor = EyeColor::Blue;
+    family.mother->body.physicalAttributes.hairColor = "Blonde";
 
-    auto child = std::make_shared<Person>();
-    child->name = "Jimmy Doe";
-    child->age = 10;
-    family.children.push_back(*child);
+    Person child;
+    child.name = "Jimmy Doe";
+    child.age = 10;
+    child.body.weight = 40.0;
+    child.body.height = 1.40;
+    child.body.physicalAttributes.eyeColor = EyeColor::Green;
+    child.body.physicalAttributes.hairColor = "Brown";
+    family.children.push_back(child);
 
     EXPECT_NO_THROW(family.validate());
 
@@ -186,7 +198,7 @@ TEST(GeneratedClassesTest, FamilyDeserialization) {
     doc.Parse(json);
 
     Family family;
-    family.fromJson(doc);
+    EXPECT_NO_THROW(family.fromJson(doc));
 
     EXPECT_NO_THROW(family.validate());
     EXPECT_EQ(family.familyName, "Smith");
@@ -198,6 +210,7 @@ TEST(GeneratedClassesTest, FamilyDeserialization) {
     EXPECT_EQ(family.children[0].name, "Jimmy Smith");
     EXPECT_EQ(family.children[0].age, 15);
 }
+
 TEST(GeneratedClassesTest, EnumSerialization) {
     Person person;
     person.name = "John Doe";
@@ -242,7 +255,7 @@ TEST(GeneratedClassesTest, EnumDeserialization) {
     doc.Parse(json);
 
     Person person;
-    person.fromJson(doc);
+    EXPECT_NO_THROW(person.fromJson(doc));
 
     EXPECT_NO_THROW(person.validate());
     EXPECT_EQ(person.name, "Jane Doe");
