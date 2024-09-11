@@ -6,22 +6,25 @@
     {
       "name": "ObjectType",
       "type": "enum",
-      "values": ["Class", "Struct"]
+      "values": ["Class", "Struct"],
+      "description": "Defines the type of object (Class or Struct) in the schema"
     },
     {
       "name": "EyeColor",
       "type": "enum",
-      "values": ["Brown", "Blue", "Green", "Hazel", "Gray"]
+      "values": ["Brown", "Blue", "Green", "Hazel", "Gray"],
+      "description": "Represents different eye colors"
     }
   ],
   "classes": [
     {
       "name": "Person",
       "object_type": "Class",
+      "description": "Represents a person with basic attributes and physical characteristics",
       "attributes": [
-        {"name": "name", "type": "std::string"},
-        {"name": "age", "type": "int"},
-        {"name": "body", "type": "Body"}
+        {"name": "name", "type": "std::string", "description": "The person's name"},
+        {"name": "age", "type": "int", "description": "The person's age in years"},
+        {"name": "body", "type": "Body", "description": "The person's physical body attributes"}
       ],
       "methods": [],
       "constraints": {
@@ -34,10 +37,11 @@
         {
           "name": "Body",
           "object_type": "Struct",
+          "description": "Represents physical attributes of a person's body",
           "attributes": [
-            {"name": "weight", "type": "double"},
-            {"name": "height", "type": "double"},
-            {"name": "physicalAttributes", "type": "PhysicalAttributes"}
+            {"name": "weight", "type": "double", "description": "The person's weight in kilograms"},
+            {"name": "height", "type": "double", "description": "The person's height in meters"},
+            {"name": "physicalAttributes", "type": "PhysicalAttributes", "description": "Additional physical characteristics"}
           ],
           "constraints": {
             "weight": {
@@ -53,9 +57,10 @@
             {
               "name": "PhysicalAttributes",
               "object_type": "Struct",
+              "description": "Represents specific physical characteristics",
               "attributes": [
-                {"name": "eyeColor", "type": "EyeColor"},
-                {"name": "hairColor", "type": "std::string"}
+                {"name": "eyeColor", "type": "EyeColor", "description": "The person's eye color"},
+                {"name": "hairColor", "type": "std::string", "description": "The person's hair color"}
               ],
               "constraints": {}
             }
@@ -66,11 +71,12 @@
     {
       "name": "Family",
       "object_type": "Class",
+      "description": "Represents a family unit with parents and children",
       "attributes": [
-        {"name": "familyName", "type": "std::string"},
-        {"name": "father", "type": "Person"},
-        {"name": "mother", "type": "Person"},
-        {"name": "children", "type": "std::vector<Person>"}
+        {"name": "familyName", "type": "std::string", "description": "The family's surname"},
+        {"name": "father", "type": "Person", "description": "The father in the family"},
+        {"name": "mother", "type": "Person", "description": "The mother in the family"},
+        {"name": "children", "type": "std::vector<Person>", "description": "The children in the family"}
       ],
       "methods": [],
       "constraints": {}
